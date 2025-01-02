@@ -3,37 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact Us - BlueCo</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Secure Communication</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.0.0/jsencrypt.min.js"></script>
 </head>
 <body>
-  <header>
-   
-    <img src="Eco_logo.jpg">
-    <h1>EcoLife</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="Log in.html">Log in</a>
-      <a href="contact.html">Contact Us</a>
-    </nav>
-  </header>
-  <main>
-    <h2>Contact Us</h2>
-    <form class="contact-form">
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required>
-      
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required>
-      
-      <label for="message">Message:</label>
-      <textarea id="message" name="message" rows="5" required></textarea>
-      
-      <button type="submit">Send</button>
-    </form>
-  </main>
-  <footer>
-    <p>&copy; 2024 EcoLife. Renad Mousa Alzahrani.</p>
-  </footer>
+  <h1>Secure Communication Demo</h1>
+  <form id="secureForm">
+    <label for="message">Enter a Message:</label>
+    <textarea id="message" required></textarea>
+    <button type="submit">Send Securely</button>
+  </form>
+  <p><strong>Encrypted Message:</strong></p>
+  <p id="encryptedMessage"></p>
+  
+  <script>
+    const publicKey = `-----BEGIN PUBLIC KEY-----
+    MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALGVcZnWaFF8UC+9UiyLxyMeRFc9DtRj
+    nOv3Z5YrXqGJ6G7bFz4nzhtwIJHnRjbQ9V/69Ol9iV0p9CtBFoj0CAwEAAQ==
+    -----END PUBLIC KEY-----`;
+
+    document.getElementById("secureForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const message = document.getElementById("message").value;
+
+      // Encrypt the message using the public key
+      const encryptor = new JSEncrypt();
+      encryptor.setPublicKey(publicKey);
+      const encryptedMessage = encryptor.encrypt(message);
+
+      // Display the encrypted message
+      document.getElementById("encryptedMessage").textContent = encryptedMessage;
+
+      // Send the encrypted message to the server
+      fetch("https://tt-zr9b.onrender.com", { // استبدل برابط Render
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ encryptedMessage })
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Decrypted on Server:", data.decryptedMessage);
+        })
+        .catch((error) => console.error("Error:", error));
+    });
+  </script>
 </body>
 </html>
